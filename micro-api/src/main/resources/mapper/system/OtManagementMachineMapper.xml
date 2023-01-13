@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtManagementMachineMapper">
+
+    <resultMap type="OtManagementMachine" id="OtManagementMachineResult">
+        <result property="managementMachineNo"    column="management_machine_no"    />
+        <result property="appPlantNo"    column="app_no_plant"    />
+        <result property="appMachineNo"    column="app_no_machine"    />
+    </resultMap>
+
+    <sql id="selectOtManagementMachineVo">
+        select management_machine_no, app_no_plant, app_no_machine from ot_management_machine
+    </sql>
+
+    <select id="selectOtManagementMachineList" parameterType="OtManagementMachine" resultMap="OtManagementMachineResult">
+        <include refid="selectOtManagementMachineVo"/>
+        <where>
+            <if test="appPlantNo != null "> and app_no_plant = #{appPlantNo}</if>
+            <if test="appMachineNo != null "> and app_no_machine = #{appMachineNo}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOtManagementMachinePlantList" parameterType="OtManagementMachine"
+            resultType="java.util.Map">
+		SELECT
+		t1.machine_no as machineNo,
+		t1.machine_name as machineName,
+		t3.plant_name as plantName
+		FROM
+		ot_app_machine t1
+		LEFT JOIN ot_management_machine t2 ON t1.machine_no = t2.app_no_machine
+		LEFT JOIN ot_app_plant t3 ON t2.app_no_plant=t3.plant_no
+        <where>
+        	AND t3.plant_no= #{plantNo}
+        </where>
+    </select>
+
+    <select id="selectOtManagementMachineById" parameterType="Long" resultMap="OtManagementMachineResult">
+        <include refid="selectOtManagementMachineVo"/>
+        where management_machine_no = #{managementMachineNo}
+    </select>
+
+    <insert id="insertOtManagementMachine" parameterType="OtManagementMachine" useGeneratedKeys="true" keyProperty="managementMachineNo">
+        insert into ot_management_machine
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appPlantNo != null">app_no_plant,</if>
+            <if test="appMachineNo != null">app_no_machine,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appPlantNo != null">#{appPlantNo},</if>
+            <if test="appMachineNo != null">#{appMachineNo},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtManagementMachine" parameterType="OtManagementMachine">
+        update ot_management_machine
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appPlantNo != null">user_no_plant = #{appPlantNo},</if>
+            <if test="appMachineNo != null">user_no_machine = #{appMachineNo},</if>
+        </trim>
+        where management_machine_no = #{managementMachineNo}
+    </update>
+
+    <delete id="deleteOtManagementMachineById" parameterType="Long">
+       DELETE ot_app_machine , ot_management_machine FROM ot_app_machine INNER JOIN ot_management_machine
+       ON ot_app_machine.machine_no = ot_management_machine.app_no_machine WHERE ot_management_machine.app_no_machine =#{appMachineNo}
+    </delete>
+
+
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtTaskListMapper">
+
+    <resultMap type="OtTaskList" id="OtTaskListResult">
+        <result property="taskNo"    column="task_no"    />
+        <result property="finsize"    column="finsize"    />
+        <result property="orderDate"    column="order_date"    />
+        <result property="item"    column="item"    />
+        <result property="assembly"    column="assembly"    />
+        <result property="deliveryDate"    column="delivery_date"    />
+        <result property="partNo"    column="part_no"    />
+        <result property="purchaseOrderQty"    column="purchase_order_qty"    />
+        <result property="productionQty"    column="production_qty"    />
+        <result property="purchaseOrderNo"    column="purchase_order_no"    />
+        <result property="purchaseOrderDate"    column="purchase_order_date"    />
+        <result property="issueDate"    column="issue_date"    />
+        <result property="taskState"    column="task_state"    />
+        <result property="userNoManager"    column="user_no_manager"    />
+    </resultMap>
+
+    <sql id="selectOtTaskListVo">
+        select task_no, finsize, order_date, item, assembly, delivery_date, part_no, purchase_order_qty,
+        production_qty, purchase_order_no, purchase_order_date, issue_date, task_state, user_no_manager,plant_no from ot_task_list
+    </sql>
+
+    <select id="selectOtTaskListList" parameterType="OtTaskList" resultMap="OtTaskListResult">
+        <include refid="selectOtTaskListVo"/>
+        <where>
+            <if test="finsize != null  and finsize != ''"> and finsize = #{finsize}</if>
+            <if test="orderDate != null "> and order_date = #{orderDate}</if>
+            <if test="item != null  and item != ''"> and item = #{item}</if>
+            <if test="assembly != null  and assembly != ''"> and assembly = #{assembly}</if>
+            <if test="deliveryDate != null "> and delivery_date = #{deliveryDate}</if>
+            <if test="partNo != null  and partNo != ''"> and part_no = #{partNo}</if>
+            <if test="purchaseOrderQty != null "> and purchase_order_qty = #{purchaseOrderQty}</if>
+            <if test="productionQty != null "> and production_qty = #{productionQty}</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="purchaseOrderDate != null "> and purchase_order_date = #{purchaseOrderDate}</if>
+            <if test="issueDate != null "> and issue_date = #{issueDate}</if>
+            <if test="taskState != null  and taskState != ''"> and task_state = #{taskState}</if>
+            <if test="userNoManager != null "> and user_no_manager = #{userNoManager}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOtTaskListListAss" parameterType="OtTaskList" resultType="java.util.Map">
+        SELECT
+        t1.task_no taskNo,
+        t1.finsize,
+        t1.order_date orderDate,
+        t1.item,
+        t1.assembly,
+        t1.delivery_date deliveryDate,
+        t1.part_no partNo,
+        t1.purchase_order_qty purchaseOrderQty,
+        t1.production_qty productionQty,
+        t1.purchase_order_no purchaseOrderNo,
+        t1.purchase_order_date purchaseOrderDate,
+        t1.issue_date issueDate,
+        t1.task_state taskState,
+        t1.user_no_manager userNoManager,
+        t1.plant_no plantNo,
+        t3.plant_name plantName,
+        t2.ass_num assNum
+        FROM
+        ot_task_list t1
+        LEFT JOIN ( SELECT task_no, count( * ) ass_num FROM ot_task_assignment GROUP BY task_no ) AS t2 ON t1.task_no = t2.task_no
+        LEFT JOIN ot_app_plant t3 ON t1.plant_no=t3.plant_no
+        <where>
+            <if test="finsize != null  and finsize != ''"> and t1.finsize = #{finsize}</if>
+            <if test="orderDate != null "> and t1.order_date = #{orderDate}</if>
+            <if test="item != null  and item != ''"> and t1.item = #{item}</if>
+            <if test="assembly != null  and assembly != ''"> and t1.assembly = #{assembly}</if>
+            <if test="deliveryDate != null "> and t1.delivery_date = #{deliveryDate}</if>
+            <if test="partNo != null  and partNo != ''"> and t1.part_no = #{partNo}</if>
+            <if test="purchaseOrderQty != null "> and t1.purchase_order_qty = #{purchaseOrderQty}</if>
+            <if test="productionQty != null "> and t1.production_qty = #{productionQty}</if>
+            <if test="purchaseOrderNo != null  and purchaseOrderNo != ''"> and t1.purchase_order_no = #{purchaseOrderNo}</if>
+            <if test="purchaseOrderDate != null "> and t1.purchase_order_date = #{purchaseOrderDate}</if>
+            <if test="issueDate != null "> and t1.issue_date = #{issueDate}</if>
+            <if test="taskState != null  and taskState != ''"> and t1.task_state = #{taskState}</if>
+            <if test="userNoManager != null "> and t1.user_no_manager = #{userNoManager}</if>
+            <if test="plantNo != null and plantNo != ''"> and t1.plant_no = #{plantNo}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOtTaskListById" parameterType="Long" resultMap="OtTaskListResult">
+        <include refid="selectOtTaskListVo"/>
+        where task_no = #{taskNo}
+    </select>
+
+    <insert id="insertOtTaskList" parameterType="OtTaskList" useGeneratedKeys="true" keyProperty="taskNo">
+        insert into ot_task_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="finsize != null">finsize,</if>
+            <if test="orderDate != null">order_date,</if>
+            <if test="item != null">item,</if>
+            <if test="assembly != null">assembly,</if>
+            <if test="deliveryDate != null">delivery_date,</if>
+            <if test="partNo != null">part_no,</if>
+            <if test="purchaseOrderQty != null">purchase_order_qty,</if>
+            <if test="productionQty != null">production_qty,</if>
+            <if test="purchaseOrderNo != null">purchase_order_no,</if>
+            <if test="purchaseOrderDate != null">purchase_order_date,</if>
+            <if test="issueDate != null">issue_date,</if>
+            <if test="taskState != null">task_state,</if>
+            <if test="userNoManager != null">user_no_manager,</if>
+            <if test="plantNo != null">plant_no,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="finsize != null">#{finsize},</if>
+            <if test="orderDate != null">#{orderDate},</if>
+            <if test="item != null">#{item},</if>
+            <if test="assembly != null">#{assembly},</if>
+            <if test="deliveryDate != null">#{deliveryDate},</if>
+            <if test="partNo != null">#{partNo},</if>
+            <if test="purchaseOrderQty != null">#{purchaseOrderQty},</if>
+            <if test="productionQty != null">#{productionQty},</if>
+            <if test="purchaseOrderNo != null">#{purchaseOrderNo},</if>
+            <if test="purchaseOrderDate != null">#{purchaseOrderDate},</if>
+            <if test="issueDate != null">#{issueDate},</if>
+            <if test="taskState != null">#{taskState},</if>
+            <if test="userNoManager != null">#{userNoManager},</if>
+            <if test="plantNo != null">#{plantNo},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtTaskList" parameterType="OtTaskList">
+        update ot_task_list
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="finsize != null">finsize = #{finsize},</if>
+            <if test="orderDate != null">order_date = #{orderDate},</if>
+            <if test="item != null">item = #{item},</if>
+            <if test="assembly != null">assembly = #{assembly},</if>
+            <if test="deliveryDate != null">delivery_date = #{deliveryDate},</if>
+            <if test="partNo != null">part_no = #{partNo},</if>
+            <if test="purchaseOrderQty != null">purchase_order_qty = #{purchaseOrderQty},</if>
+            <if test="productionQty != null">production_qty = #{productionQty},</if>
+            <if test="purchaseOrderNo != null">purchase_order_no = #{purchaseOrderNo},</if>
+            <if test="purchaseOrderDate != null">purchase_order_date = #{purchaseOrderDate},</if>
+            <if test="issueDate != null">issue_date = #{issueDate},</if>
+            <if test="taskState != null">task_state = #{taskState},</if>
+            <if test="userNoManager != null">user_no_manager = #{userNoManager},</if>
+        </trim>
+        where task_no = #{taskNo}
+    </update>
+
+    <delete id="deleteOtTaskListById" parameterType="Long">
+        delete from ot_task_list where task_no = #{taskNo}
+    </delete>
+
+    <delete id="deleteOtTaskListByIds" parameterType="String">
+        delete from ot_task_list where task_no in
+        <foreach item="taskNo" collection="array" open="(" separator="," close=")">
+            #{taskNo}
+        </foreach>
+    </delete>
+
+</mapper>

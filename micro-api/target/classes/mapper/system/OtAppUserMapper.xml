@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtAppUserMapper">
+
+    <resultMap type="OtAppUser" id="OtAppUserResult">
+        <result property="userNo"    column="user_no"    />
+        <result property="userLoginName"    column="user_login_name"    />
+        <result property="userPasswd"    column="user_passwd"    />
+        <result property="userTrueName"    column="user_true_name"    />
+        <result property="userRole"    column="user_role"    />
+    </resultMap>
+
+    <sql id="selectOtAppUserVo">
+        select user_no, user_login_name, user_passwd, user_true_name, user_role from ot_app_user
+    </sql>
+
+    <select id="selectOtAppUserList" parameterType="OtAppUser" resultMap="OtAppUserResult">
+        <include refid="selectOtAppUserVo"/>
+        <where>
+            <if test="userLoginName != null  and userLoginName != ''"> and user_login_name like concat('%', #{userLoginName}, '%')</if>
+            <if test="userPasswd != null  and userPasswd != ''"> and user_passwd = #{userPasswd}</if>
+            <if test="userTrueName != null  and userTrueName != ''"> and user_true_name like concat('%', #{userTrueName}, '%')</if>
+            <if test="userRole != null  and userRole != ''"> and user_role = #{userRole}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOtAppUserOperatorList" parameterType="OtAppUser" resultType="java.util.Map">
+        SELECT
+        t1.user_no as userNo,
+        t1.user_login_name as userLoginName,
+        t1.user_true_name as userTrueName,
+        t1.user_true_name as operatorName,
+        t3.user_true_name AS managerName
+        FROM
+        ot_app_user t1
+        LEFT JOIN ot_management_operator t2 ON t1.user_no = t2.user_no_operator
+        LEFT JOIN ot_app_user t3 ON t2.user_no_manager = t3.user_no
+        <where>
+             and t1.user_role = 2
+            <if test="userLoginName != null  and userLoginName != ''"> and t1.user_login_name like concat('%', #{userLoginName}, '%')</if>
+            <if test="userTrueName != null  and userTrueName != ''"> and t1.user_true_name like concat('%', #{userTrueName}, '%')</if>
+        </where>
+        order by t1.user_no
+    </select>
+
+    <select id="selectOtAppUserById" parameterType="Long" resultMap="OtAppUserResult">
+        <include refid="selectOtAppUserVo"/>
+        where user_no = #{userNo}
+    </select>
+
+    <insert id="insertOtAppUser" parameterType="OtAppUser" useGeneratedKeys="true" keyProperty="userNo">
+        insert into ot_app_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userLoginName != null">user_login_name,</if>
+            <if test="userPasswd != null">user_passwd,</if>
+            <if test="userTrueName != null">user_true_name,</if>
+            <if test="userRole != null">user_role,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userLoginName != null">#{userLoginName},</if>
+            <if test="userPasswd != null">#{userPasswd},</if>
+            <if test="userTrueName != null">#{userTrueName},</if>
+            <if test="userRole != null">#{userRole},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtAppUser" parameterType="OtAppUser">
+        update ot_app_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userLoginName != null">user_login_name = #{userLoginName},</if>
+            <if test="userPasswd != null">user_passwd = #{userPasswd},</if>
+            <if test="userTrueName != null">user_true_name = #{userTrueName},</if>
+            <if test="userRole != null">user_role = #{userRole},</if>
+        </trim>
+        where user_no = #{userNo}
+    </update>
+
+    <delete id="deleteOtAppUserById" parameterType="Long">
+        delete from ot_app_user where user_no = #{userNo}
+    </delete>
+
+    <delete id="deleteOtAppUserByIds" parameterType="String">
+        delete from ot_app_user where user_no in
+        <foreach item="userNo" collection="array" open="(" separator="," close=")">
+            #{userNo}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtDictOperationsMapper">
+    
+    <resultMap type="OtDictOperations" id="OtDictOperationsResult">
+        <result property="dictOpNo"    column="dict_op_no"    />
+        <result property="dictOpName"    column="dict_op_name"    />
+    </resultMap>
+
+    <sql id="selectOtDictOperationsVo">
+        select dict_op_no, dict_op_name from ot_dict_operations
+    </sql>
+
+    <select id="selectOtDictOperationsList" parameterType="OtDictOperations" resultMap="OtDictOperationsResult">
+        <include refid="selectOtDictOperationsVo"/>
+        <where>  
+            <if test="dictOpName != null  and dictOpName != ''"> and dict_op_name like concat('%', #{dictOpName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectOtDictOperationsById" parameterType="Long" resultMap="OtDictOperationsResult">
+        <include refid="selectOtDictOperationsVo"/>
+        where dict_op_no = #{dictOpNo}
+    </select>
+        
+    <insert id="insertOtDictOperations" parameterType="OtDictOperations" useGeneratedKeys="true" keyProperty="dictOpNo">
+        insert into ot_dict_operations
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dictOpName != null">dict_op_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dictOpName != null">#{dictOpName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtDictOperations" parameterType="OtDictOperations">
+        update ot_dict_operations
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dictOpName != null">dict_op_name = #{dictOpName},</if>
+        </trim>
+        where dict_op_no = #{dictOpNo}
+    </update>
+
+    <delete id="deleteOtDictOperationsById" parameterType="Long">
+        delete from ot_dict_operations where dict_op_no = #{dictOpNo}
+    </delete>
+
+    <delete id="deleteOtDictOperationsByIds" parameterType="String">
+        delete from ot_dict_operations where dict_op_no in 
+        <foreach item="dictOpNo" collection="array" open="(" separator="," close=")">
+            #{dictOpNo}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtTaskAssignmentMapper">
+
+    <resultMap type="OtTaskAssignment" id="OtTaskAssignmentResult">
+        <result property="taskAsNo"    column="task_as_no"    />
+        <result property="taskNo"    column="task_no"    />
+        <result property="userNoOperator"    column="user_no_operator"    />
+        <result property="assignmentTime"    column="assignment_time"    />
+        <result property="dictOpNo"    column="dict_op_no"    />
+        <result property="fromDate"    column="from_date"    />
+        <result property="toDate"    column="to_date"    />
+        <result property="operationDescription"    column="operation_description"    />
+        <result property="targetQty"    column="target_qty"    />
+        <result property="assignmentState"    column="assignment_state"    />
+    </resultMap>
+
+    <sql id="selectOtTaskAssignmentVo">
+        select task_as_no, task_no, user_no_operator, assignment_time, dict_op_no,from_date,to_date,
+        operation_description, target_qty, assignment_state from ot_task_assignment
+    </sql>
+
+    <select id="selectOtTaskAssignmentList" parameterType="OtTaskAssignment" resultMap="OtTaskAssignmentResult">
+        <include refid="selectOtTaskAssignmentVo"/>
+        <where>
+            <if test="taskNo != null "> and task_no = #{taskNo}</if>
+            <if test="userNoOperator != null "> and user_no_operator = #{userNoOperator}</if>
+            <if test="assignmentTime != null "> and assignment_time = #{assignmentTime}</if>
+            <if test="dictOpNo != null "> and dict_op_no = #{dictOpNo}</if>
+            <if test="operationDescription != null  and operationDescription != ''"> and operation_description = #{operationDescription}</if>
+            <if test="targetQty != null "> and target_qty = #{targetQty}</if>
+            <if test="assignmentState != null  and assignmentState != ''"> and assignment_state = #{assignmentState}</if>
+        </where>
+    </select>
+
+    <select id="selectOtTaskAssignmentListName" parameterType="OtTaskAssignment" resultType="java.util.Map">
+        SELECT
+        t1.task_as_no taskAsNo,
+        t1.task_no taskNo,
+        t1.user_no_operator userNoOperator,
+        t1.assignment_time assignmentTime,
+        t1.dict_op_no dictOpNo,
+        ifnull( t1.from_date, '' ) fromDate,
+        ifnull( t1.to_date, '' ) toDate,
+        ifnull( t1.operation_description, '' ) operationDescription,
+        ifnull( t1.target_qty, '' ) targetQty,
+        ifnull( t1.assignment_state, '' ) assignmentState,
+        ifnull( t2.dict_op_name, '' ) dictOpName,
+        ifnull( t3.user_true_name, '' ) userOperatorName
+        FROM
+        ot_task_assignment t1
+        LEFT JOIN ot_dict_operations t2 ON t1.dict_op_no = t2.dict_op_no
+        LEFT JOIN ot_app_user t3 ON t1.user_no_operator = t3.user_no
+        <where>
+            <if test="taskNo != null "> and t1.task_no = #{taskNo}</if>
+            <if test="userNoOperator != null "> and t1.user_no_operator = #{userNoOperator}</if>
+            <if test="assignmentTime != null "> and t1.assignment_time = #{assignmentTime}</if>
+            <if test="dictOpNo != null "> and t1.dict_op_no = #{dictOpNo}</if>
+            <if test="operationDescription != null  and operationDescription != ''"> and t1.operation_description = #{operationDescription}</if>
+            <if test="targetQty != null "> and t1.target_qty = #{targetQty}</if>
+            <if test="assignmentState != null  and assignmentState != ''"> and t1.assignment_state = #{assignmentState}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOtTaskAssignmentListReport" parameterType="OtTaskAssignment" resultType="java.util.Map">
+        SELECT
+        t1.task_as_no taskAsNo,
+        t1.task_no taskNo,
+        t1.user_no_operator userNoOperator,
+        t1.assignment_time assignmentTime,
+        t1.dict_op_no dictOpNo,
+        ifnull( t1.from_date, '' ) fromDate,
+        ifnull( t1.to_date, '' ) toDate,
+        ifnull( t1.operation_description, '' ) operationDescription,
+        ifnull( t1.target_qty, '' ) targetQty,
+        ifnull( t1.assignment_state, '' ) assignmentState,
+        ifnull( t2.dict_op_name, '' ) dictOpName,
+        ifnull( t3.user_true_name, '' ) userOperatorName,
+        ifnull( t4.qty_done, '' ) qtyDone,
+        ifnull( t4.remarks, '' ) remarks,
+        ifnull( t4.submit_time, '' ) submitTime,
+        t5.machine_name as machineName
+        FROM
+        ot_task_assignment t1
+        LEFT JOIN ot_dict_operations t2 ON t1.dict_op_no = t2.dict_op_no
+        LEFT JOIN ot_app_user t3 ON t1.user_no_operator = t3.user_no
+        LEFT JOIN ot_task_report t4 ON t1.task_as_no = t4.task_as_no
+        LEFT JOIN ot_app_machine t5 ON t1.machine_no=t5.machine_no
+        <where>
+            <if test="taskNo != null "> and t1.task_no = #{taskNo}</if>
+            <if test="userNoOperator != null "> and t1.user_no_operator = #{userNoOperator}</if>
+            <if test="assignmentTime != null "> and t1.assignment_time = #{assignmentTime}</if>
+            <if test="dictOpNo != null "> and t1.dict_op_no = #{dictOpNo}</if>
+            <if test="operationDescription != null  and operationDescription != ''"> and t1.operation_description = #{operationDescription}</if>
+            <if test="targetQty != null "> and t1.target_qty = #{targetQty}</if>
+            <if test="assignmentState != null  and assignmentState != ''"> and t1.assignment_state = #{assignmentState}</if>
+        </where>
+    </select>
+
+    <select id="selectOtTaskAssignmentListInfoAll" parameterType="OtTaskAssignment" resultType="java.util.Map">
+        SELECT
+        t1.task_as_no taskAsNo,
+        t1.task_no taskNo,
+        t1.user_no_operator userNoOperator,
+        t1.assignment_time assignmentTime,
+        t1.dict_op_no dictOpNo,
+        t1.from_date fromDate,
+        t1.to_date toDate,
+        t1.operation_description operationDescription,
+        t1.target_qty targetQty,
+        t1.assignment_state assignmentState,
+        t1.machine_no machineNo,
+        t2.finsize,
+        t2.order_date orderDate,
+        t2.item,
+        t2.assembly,
+        t2.delivery_date deliveryDate,
+        t2.part_no partNo,
+        t2.purchase_order_qty purchaseOrderQty,
+        t2.production_qty productionQty,
+        t2.purchase_order_no purchaseOrderNo,
+        t2.purchase_order_date purchaseOrderDate,
+        t2.issue_date issueDate,
+        t2.task_state taskState,
+        t2.user_no_manager userNoManager,
+        ifnull( t3.task_report_no, '' ) taskReportNo,
+        ifnull( t3.submit_time, '' ) submitTime,
+        ifnull( t3.qty_done, '' ) qtyDone,
+        ifnull( t3.remarks, '' ) remarks,
+        t4.dict_op_name dictOpName,
+        t6.machine_name machineName,
+        t7.plant_name plantName
+        FROM
+        ot_task_assignment t1
+        RIGHT JOIN ot_task_list t2 ON t1.task_no = t2.task_no
+        LEFT JOIN ot_task_report t3 ON t1.task_as_no = t3.task_as_no
+        INNER JOIN ot_dict_operations t4 ON t1.dict_op_no = t4.dict_op_no
+        LEFT JOIN ot_management_machine t5 ON t1.machine_no =t5.app_no_machine
+        LEFT JOIN ot_app_machine t6 ON t5.app_no_machine = t6.machine_no
+        LEFT JOIN ot_app_plant t7 ON t5.app_no_plant = t7.plant_no
+        <where>
+            <if test="taskNo != null "> and t1.task_no = #{taskNo}</if>
+            <if test="userNoOperator != null "> and t1.user_no_operator = #{userNoOperator}</if>
+            <if test="assignmentTime != null "> and t1.assignment_time = #{assignmentTime}</if>
+            <if test="dictOpNo != null "> and t1.dict_op_no = #{dictOpNo}</if>
+            <if test="operationDescription != null  and operationDescription != ''"> and t1.operation_description = #{operationDescription}</if>
+            <if test="targetQty != null "> and t1.target_qty = #{targetQty}</if>
+            <if test="assignmentState != null  and assignmentState != ''"> and t1.assignment_state = #{assignmentState}</if>
+        </where>
+    </select>
+
+    <select id="selectOtTaskAssignmentById" parameterType="Long" resultMap="OtTaskAssignmentResult">
+        <include refid="selectOtTaskAssignmentVo"/>
+        where task_as_no = #{taskAsNo}
+    </select>
+
+    <insert id="insertOtTaskAssignment" parameterType="OtTaskAssignment" useGeneratedKeys="true" keyProperty="taskAsNo">
+        insert into ot_task_assignment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null">task_no,</if>
+            <if test="userNoOperator != null">user_no_operator,</if>
+            <if test="assignmentTime != null">assignment_time,</if>
+            <if test="dictOpNo != null">dict_op_no,</if>
+            <if test="fromDate != null">from_date,</if>
+            <if test="toDate != null">to_date,</if>
+            <if test="operationDescription != null">operation_description,</if>
+            <if test="targetQty != null">target_qty,</if>
+            <if test="assignmentState != null">assignment_state,</if>
+            <if test="machineNo != null">machine_no,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskNo != null">#{taskNo},</if>
+            <if test="userNoOperator != null">#{userNoOperator},</if>
+            <if test="assignmentTime != null">#{assignmentTime},</if>
+            <if test="dictOpNo != null">#{dictOpNo},</if>
+            <if test="fromDate != null">#{fromDate},</if>
+            <if test="toDate != null">#{toDate},</if>
+            <if test="operationDescription != null">#{operationDescription},</if>
+            <if test="targetQty != null">#{targetQty},</if>
+            <if test="assignmentState != null">#{assignmentState},</if>
+            <if test="machineNo != null">#{machineNo},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtTaskAssignment" parameterType="OtTaskAssignment">
+        update ot_task_assignment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskNo != null">task_no = #{taskNo},</if>
+            <if test="userNoOperator != null">user_no_operator = #{userNoOperator},</if>
+            <if test="assignmentTime != null">assignment_time = #{assignmentTime},</if>
+            <if test="dictOpNo != null">dict_op_no = #{dictOpNo},</if>
+            <if test="fromDate != null">from_date = #{fromDate},</if>
+            <if test="toDate != null">to_date = #{toDate},</if>
+            <if test="operationDescription != null">operation_description = #{operationDescription},</if>
+            <if test="targetQty != null">target_qty = #{targetQty},</if>
+            <if test="assignmentState != null">assignment_state = #{assignmentState},</if>
+        </trim>
+        where task_as_no = #{taskAsNo}
+    </update>
+
+    <delete id="deleteOtTaskAssignmentById" parameterType="Long">
+        delete from ot_task_assignment where task_as_no = #{taskAsNo}
+    </delete>
+
+    <delete id="deleteOtTaskAssignmentByIds" parameterType="String">
+        delete from ot_task_assignment where task_as_no in
+        <foreach item="taskAsNo" collection="array" open="(" separator="," close=")">
+            #{taskAsNo}
+        </foreach>
+    </delete>
+
+</mapper>

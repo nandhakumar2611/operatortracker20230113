@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtAppPlantMapper">
+
+ 	<insert id="insertOtAppPlant" parameterType="OtAppPlant" useGeneratedKeys="true" keyProperty="plantNo">
+        insert into ot_app_plant
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="plantName != null">plant_name,</if>
+            <if test="plantLocation != null">plant_location,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="plantName != null">#{plantName},</if>
+            <if test="plantLocation != null">#{plantLocation},</if>
+        </trim>
+    </insert>
+    
+    <resultMap type="OtAppPlant" id="OtAppPlantResult">
+    	<result property="plantNo"    column="plant_no"    />
+        <result property="plantName"    column="plant_name"    />
+        <result property="plantLocation"    column="plant_location"    />
+    </resultMap>
+
+    <sql id="selectOtAppPlantVo">
+        select plant_no, plant_name,plant_location from ot_app_plant
+    </sql>
+
+    <select id="selectOtAppPlantList" parameterType="OtAppPlant" resultMap="OtAppPlantResult">
+        <include refid="selectOtAppPlantVo"/>
+        <where>  
+        	<if test="plantName != null "> and plant_name = #{plantName}</if>
+            <if test="plantLocation != null "> and plant_location = #{{PlantLocation}</if>
+        </where>
+    </select>
+    
+    <select id="selectOtAppPlantById" parameterType="Long" resultMap="OtAppPlantResult">
+        <include refid="selectOtAppPlantVo"/>
+        where plant_no = #{plantNo}
+    </select>
+    
+    <update id="updateOtAppPlant" parameterType="OtAppPlant">
+        update ot_app_plant
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="plantName != null">plant_name = #{plantName},</if>
+            <if test="plantLocation != null">plant_location = #{plantLocation},</if>
+        </trim>
+        where plant_no = #{plantNo}
+    </update>
+
+    <delete id="deleteOtAppPlantById" parameterType="Long">
+        delete from ot_app_plant where plant_no = #{plantNo}
+    </delete>
+    
+</mapper>

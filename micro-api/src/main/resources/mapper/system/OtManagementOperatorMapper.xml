@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtManagementOperatorMapper">
+
+    <resultMap type="OtManagementOperator" id="OtManagementOperatorResult">
+        <result property="managementOperatorNo"    column="management_operator_no"    />
+        <result property="userNoManager"    column="user_no_manager"    />
+        <result property="userNoOperator"    column="user_no_operator"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectOtManagementOperatorVo">
+        select management_operator_no, user_no_manager, user_no_operator, create_time from ot_management_operator
+    </sql>
+
+    <select id="selectOtManagementOperatorList" parameterType="OtManagementOperator" resultMap="OtManagementOperatorResult">
+        <include refid="selectOtManagementOperatorVo"/>
+        <where>
+            <if test="userNoManager != null "> and user_no_manager = #{userNoManager}</if>
+            <if test="userNoOperator != null "> and user_no_operator = #{userNoOperator}</if>
+        </where>
+    </select>
+
+
+    <select id="selectOtManagementOperatorListName" parameterType="OtManagementOperator"
+            resultType="java.util.Map">
+        SELECT
+        t1.management_operator_no managementOperatorNo,
+        t1.user_no_manager userNoManager,
+        t2.user_true_name userOperatorTrueName,
+        t1.user_no_operator userNoOperator,
+        t3.user_true_name userManagerTrueName
+        FROM
+        ot_management_operator t1,
+        ot_app_user t2,
+        ot_app_user t3
+        <where>
+            AND t1.user_no_operator = t2.user_no
+            AND t1.user_no_manager = t3.user_no
+            <if test="userNoManager != null "> and t1.user_no_manager = #{userNoManager}</if>
+            <if test="userNoOperator != null "> and t1.user_no_operator = #{userNoOperator}</if>
+        </where>
+    </select>
+
+    <select id="selectOtManagementOperatorById" parameterType="Long" resultMap="OtManagementOperatorResult">
+        <include refid="selectOtManagementOperatorVo"/>
+        where management_operator_no = #{managementOperatorNo}
+    </select>
+
+    <insert id="insertOtManagementOperator" parameterType="OtManagementOperator" useGeneratedKeys="true" keyProperty="managementOperatorNo">
+        insert into ot_management_operator
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userNoManager != null">user_no_manager,</if>
+            <if test="userNoOperator != null">user_no_operator,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userNoManager != null">#{userNoManager},</if>
+            <if test="userNoOperator != null">#{userNoOperator},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtManagementOperator" parameterType="OtManagementOperator">
+        update ot_management_operator
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userNoManager != null">user_no_manager = #{userNoManager},</if>
+            <if test="userNoOperator != null">user_no_operator = #{userNoOperator},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where management_operator_no = #{managementOperatorNo}
+    </update>
+
+    <delete id="deleteOtManagementOperatorById" parameterType="Long">
+        DELETE ot_app_user , ot_management_operator FROM ot_app_user INNER JOIN ot_management_operator 
+        ON ot_app_user.user_no = ot_management_operator.user_no_operator  WHERE ot_management_operator.user_no_operator =#{managementOperatorNo}
+    </delete>
+
+    <delete id="deleteOtManagementOperatorByIds" parameterType="String">
+        delete from ot_management_operator where management_operator_no in
+        <foreach item="managementOperatorNo" collection="array" open="(" separator="," close=")">
+            #{managementOperatorNo}
+        </foreach>
+    </delete>
+
+</mapper>

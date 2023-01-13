@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtTaskReportMapper">
+    
+    <resultMap type="OtTaskReport" id="OtTaskReportResult">
+        <result property="taskReportNo"    column="task_report_no"    />
+        <result property="taskAsNo"    column="task_as_no"    />
+        <result property="userNoOperator"    column="user_no_operator"    />
+        <result property="submitTime"    column="submit_time"    />
+        <result property="qtyDone"    column="qty_done"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectOtTaskReportVo">
+        select task_report_no, task_as_no, user_no_operator, submit_time, qty_done, remarks from ot_task_report
+    </sql>
+
+    <select id="selectOtTaskReportList" parameterType="OtTaskReport" resultMap="OtTaskReportResult">
+        <include refid="selectOtTaskReportVo"/>
+        <where>  
+            <if test="taskAsNo != null "> and task_as_no = #{taskAsNo}</if>
+            <if test="userNoOperator != null "> and user_no_operator = #{userNoOperator}</if>
+            <if test="submitTime != null "> and submit_time = #{submitTime}</if>
+            <if test="qtyDone != null "> and qty_done = #{qtyDone}</if>
+            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+        </where>
+    </select>
+    
+    <select id="selectOtTaskReportById" parameterType="Long" resultMap="OtTaskReportResult">
+        <include refid="selectOtTaskReportVo"/>
+        where task_report_no = #{taskReportNo}
+    </select>
+        
+    <insert id="insertOtTaskReport" parameterType="OtTaskReport" useGeneratedKeys="true" keyProperty="taskReportNo">
+        insert into ot_task_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskAsNo != null">task_as_no,</if>
+            <if test="userNoOperator != null">user_no_operator,</if>
+            <if test="submitTime != null">submit_time,</if>
+            <if test="qtyDone != null">qty_done,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskAsNo != null">#{taskAsNo},</if>
+            <if test="userNoOperator != null">#{userNoOperator},</if>
+            <if test="submitTime != null">#{submitTime},</if>
+            <if test="qtyDone != null">#{qtyDone},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtTaskReport" parameterType="OtTaskReport">
+        update ot_task_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskAsNo != null">task_as_no = #{taskAsNo},</if>
+            <if test="userNoOperator != null">user_no_operator = #{userNoOperator},</if>
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+            <if test="qtyDone != null">qty_done = #{qtyDone},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where task_report_no = #{taskReportNo}
+    </update>
+
+    <delete id="deleteOtTaskReportById" parameterType="Long">
+        delete from ot_task_report where task_report_no = #{taskReportNo}
+    </delete>
+
+    <delete id="deleteOtTaskReportByIds" parameterType="String">
+        delete from ot_task_report where task_report_no in 
+        <foreach item="taskReportNo" collection="array" open="(" separator="," close=")">
+            #{taskReportNo}
+        </foreach>
+    </delete>
+
+</mapper>

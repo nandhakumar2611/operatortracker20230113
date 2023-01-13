@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.operatorTracker.mapper.OtAppMachineMapper">
+
+ 	<insert id="insertOtAppMachine" parameterType="OtAppMachine" useGeneratedKeys="true" keyProperty="MachineNo">
+        insert into ot_app_machine
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="machineName != null">machine_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="machineName != null">#{machineName},</if>
+        </trim>
+    </insert>
+    
+    <resultMap type="OtAppMachine" id="OtAppMachineResult">
+    	<result property="machineNo"    column="machine_no"    />
+        <result property="machineName"    column="machine_name"    />
+    </resultMap>
+
+    <sql id="selectOtAppMachineVo">
+        select machine_no, machine_name from ot_app_machine
+    </sql>
+
+    <select id="selectOtAppMachineList" parameterType="OtAppMachine" resultMap="OtAppMachineResult">
+        <include refid="selectOtAppMachineVo"/>
+        <where>  
+        	<if test="machineName != null "> and machine_name = #{machineName}</if>
+        </where>
+    </select>
+    
+    <select id="selectOtAppMachineById" parameterType="Long" resultMap="OtAppMachineResult">
+        <include refid="selectOtAppMachineVo"/>
+        where machine_no = #{machineNo}
+    </select>
+    
+    <select id="selectOtAppMachinePlantList" parameterType="OtAppMachine" resultType="java.util.Map">
+		SELECT 
+		t1.machine_no as machineNo,
+		t1.machine_name as machineName,
+		t3.plant_name as plantName 
+		FROM
+		ot_app_machine t1
+		LEFT JOIN ot_management_machine t2 ON t1.machine_no = t2.app_no_machine
+		LEFT JOIN ot_app_plant t3 ON t2.app_no_plant=t3.plant_no
+    </select>
+    
+    <update id="updateOtAppMachine" parameterType="OtAppMachine">
+        update ot_app_machine
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="machineName != null">machine_name = #{machineName},</if>
+        </trim>
+        where machine_no = #{machineNo}
+    </update>
+
+    <delete id="deleteOtAppMachineById" parameterType="Long">
+        delete from ot_app_machine where machine_no = #{machineNo}
+    </delete>
+    
+</mapper>
