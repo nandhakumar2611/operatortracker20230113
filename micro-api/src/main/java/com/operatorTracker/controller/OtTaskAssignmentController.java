@@ -77,7 +77,7 @@ public class OtTaskAssignmentController extends BaseController
     @CrossOrigin
     public AjaxResult listReport(OtTaskAssignment otTaskAssignment)
     {
-        if(getLoginUser()==null || !getLoginUser().getUserRole().equals("1")){
+        if(getLoginUser()==null){
             return AjaxResult.error();
         }
         Map<String,Object> map=new HashMap<>();
