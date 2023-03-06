@@ -44,6 +44,8 @@ public class OtTaskAssignment
     
     /**Machine No  */
     private Long machineNo;
+    
+    private Long priority;
 
     public void setTaskAsNo(Long taskAsNo)
     {
@@ -156,6 +158,16 @@ public class OtTaskAssignment
 	public void setMachineNo(Long machineNo) {
 		this.machineNo = machineNo;
 	}
+
+	public Long getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Long priority) {
+		this.priority = priority;
+	}
+	
+	
     
     
 }
