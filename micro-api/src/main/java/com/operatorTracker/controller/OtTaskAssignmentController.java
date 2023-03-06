@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.operatorTracker.domain.AjaxResult;
+import com.operatorTracker.domain.OtAppPlant;
 import com.operatorTracker.domain.OtTaskList;
 import com.operatorTracker.page.TableDataInfo;
 import com.operatorTracker.service.IOtTaskListService;
@@ -87,6 +88,8 @@ public class OtTaskAssignmentController extends BaseController
         map.put("list",list);
         return AjaxResult.success(map);
     }
+    
+    
 
     /**
      * add taskAssignment
@@ -123,5 +126,13 @@ public class OtTaskAssignmentController extends BaseController
     public AjaxResult remove(String ids)
     {
         return toAjax(otTaskAssignmentService.deleteOtTaskAssignmentByIds(ids));
+    }
+    
+    @PostMapping( "/del")
+    @ResponseBody
+    @CrossOrigin
+    public AjaxResult remove(OtTaskAssignment otTaskAssignment)
+    {
+        return toAjax(otTaskAssignmentService.deleteOtTaskAssignmentById(otTaskAssignment.getTaskAsNo()));
     }
 }
