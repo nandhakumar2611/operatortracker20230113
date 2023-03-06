@@ -111,6 +111,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         t1.to_date toDate,
         t1.operation_description operationDescription,
         t1.target_qty targetQty,
+        t1.priority priority,
         t1.assignment_state assignmentState,
         t1.machine_no machineNo,
         t2.finsize,
@@ -168,6 +169,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="toDate != null">to_date,</if>
             <if test="operationDescription != null">operation_description,</if>
             <if test="targetQty != null">target_qty,</if>
+            <if test="priority != null">priority,</if>
             <if test="assignmentState != null">assignment_state,</if>
             <if test="machineNo != null">machine_no,</if>
          </trim>
@@ -180,6 +182,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="toDate != null">#{toDate},</if>
             <if test="operationDescription != null">#{operationDescription},</if>
             <if test="targetQty != null">#{targetQty},</if>
+            <if test="priority != null">#{priority},</if>
             <if test="assignmentState != null">#{assignmentState},</if>
             <if test="machineNo != null">#{machineNo},</if>
          </trim>
