@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.operatorTracker.domain.AjaxResult;
+import com.operatorTracker.domain.OtAppUser;
 import com.operatorTracker.page.TableDataInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -102,5 +103,19 @@ public class OtTaskListController extends BaseController
             return AjaxResult.error();
         }
         return toAjax(otTaskListService.deleteOtTaskListByIds(ids));
+    }
+    
+    /**
+     * remove appUser
+     */
+    @PostMapping( "/del")
+    @ResponseBody
+    @CrossOrigin
+    public AjaxResult remove(OtTaskList otTaskList)
+    {
+        if(getLoginUser()==null || !getLoginUser().getUserRole().equals("1")){
+            return AjaxResult.error();
+        }
+        return toAjax(otTaskListService.deleteOtTaskListById(otTaskList.getTaskNo()));
     }
 }
