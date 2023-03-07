@@ -1,173 +1,131 @@
-package com.operatorTracker.domain;
+package com.operatorTracker.controller;
 
 import java.util.Date;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.List;
+import com.operatorTracker.domain.AjaxResult;
+import com.operatorTracker.domain.OtAppUser;
+import com.operatorTracker.domain.OtTaskAssignment;
+import com.operatorTracker.page.TableDataInfo;
+import com.operatorTracker.service.IOtTaskAssignmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import com.operatorTracker.domain.OtTaskReport;
+import com.operatorTracker.service.IOtTaskReportService;
 
 /**
- * taskAssignment object ot_task_assignment
+ * taskReportController
  *
  * @author jianxiang sun
  * @date 2022-12-02
  */
-public class OtTaskAssignment
+@Controller
+@RequestMapping("/system/taskReport")
+public class OtTaskReportController extends BaseController
 {
-    private static final long serialVersionUID = 1L;
 
-    /**  */
-    private Long taskAsNo;
+    @Autowired
+    private IOtTaskReportService otTaskReportService;
+    @Autowired
+    private IOtTaskAssignmentService otTaskAssignmentService;
 
-    /**  */
-    private Long taskNo;
+    /**
+     * Query taskReport List
+     */
+    @PostMapping("/list")
+    @ResponseBody
+    @CrossOrigin
+    public TableDataInfo list(OtTaskReport otTaskReport)
+    {
+        startPage();
+        List<OtTaskReport> list = otTaskReportService.selectOtTaskReportList(otTaskReport);
+        return getDataTable(list);
+    }
 
-    /** Operator User No */
-    private Long userNoOperator;
+    /**
+     * add taskReport
+     */
+    @PostMapping("/add")
+    @ResponseBody
+    @CrossOrigin
+    public AjaxResult addSave(OtTaskReport otTaskReport)
+    {
+        return toAjax(otTaskReportService.insertOtTaskReport(otTaskReport));
+    }
 
-    /**  */
-    private Date assignmentTime;
+    @PostMapping("/addReport")
+    @ResponseBody
+    @CrossOrigin
+    public AjaxResult addReport(
+            @RequestParam (value = "taskAsNo") Long taskAsNo,
+            @RequestParam (value = "qtyDone") Long qtyDone,
+            @RequestParam (value = "remarks") String remarks,
+            @RequestParam (value = "taskReportNo",required = false) Long taskReportNo,
+            @RequestParam (value = "taskState") Integer taskState
+    )
+    {
 
-    /** Operation dictionary no */
-    private Long dictOpNo;
+        if(getLoginUser()==null || !getLoginUser().getUserRole().equals("2")){
+            return AjaxResult.error();
+        }
 
-    private Date fromDate;
+        OtTaskReport otTaskReport=new OtTaskReport();
+        otTaskReport.setTaskAsNo(taskAsNo);
+        if(qtyDone!=null){
+            otTaskReport.setQtyDone(qtyDone);
+        }
+        if(remarks!=null){
+            otTaskReport.setRemarks(remarks);
+        }
+        otTaskReport.setUserNoOperator(getLoginUser().getUserNo());
+        if(taskReportNo!=null){
+            otTaskReport.setTaskReportNo(taskReportNo);
+        }
+        if(taskState==1){
+            OtTaskAssignment taskAssignment=new OtTaskAssignment();
+            taskAssignment.setAssignmentState("done");
+            taskAssignment.setTaskAsNo(otTaskReport.getTaskAsNo());
+            otTaskAssignmentService.updateOtTaskAssignment(taskAssignment);
+        }
+        otTaskReport.setSubmitTime(new Date());
+        if(otTaskReport.getTaskReportNo()==null){
+            return toAjax(otTaskReportService.insertOtTaskReport(otTaskReport));
+        }else {
+            return toAjax(otTaskReportService.updateOtTaskReport(otTaskReport));
+        }
+    }
 
-    private Date toDate;
+    /**
+     * edit taskReport
+     */
+    @PostMapping("/edit")
+    @ResponseBody
+    @CrossOrigin
+    public AjaxResult editSave(OtTaskReport otTaskReport)
+    {
+        return toAjax(otTaskReportService.updateOtTaskReport(otTaskReport));
+    }
 
-    /**  */
-    private String operationDescription;
-
-    /**  */
-    private Long targetQty;
-
-    /**inProcess;done  */
-    private String assignmentState;
+    /**
+     * delete taskReport
+     */
+    @PostMapping( "/remove")
+    @ResponseBody
+    @CrossOrigin
+    public AjaxResult remove(String ids)
+    {
+        return toAjax(otTaskReportService.deleteOtTaskReportByIds(ids));
+    }
     
-    /**Machine No  */
-    private Long machineNo;
-    
-    private Long priority;
-
-    public void setTaskAsNo(Long taskAsNo)
+    /**
+     * remove appUser
+     */
+    @PostMapping( "/del")
+    @ResponseBody
+    @CrossOrigin
+    public AjaxResult remove(OtTaskReport otTaskReport)
     {
-        this.taskAsNo = taskAsNo;
+        
+        return toAjax(otTaskReportService.deleteOtTaskReportById(otTaskReport.getTaskAsNo()));
     }
-
-    public Long getTaskAsNo()
-    {
-        return taskAsNo;
-    }
-    public void setTaskNo(Long taskNo)
-    {
-        this.taskNo = taskNo;
-    }
-
-    public Long getTaskNo()
-    {
-        return taskNo;
-    }
-    public void setUserNoOperator(Long userNoOperator)
-    {
-        this.userNoOperator = userNoOperator;
-    }
-
-    public Long getUserNoOperator()
-    {
-        return userNoOperator;
-    }
-    public void setAssignmentTime(Date assignmentTime)
-    {
-        this.assignmentTime = assignmentTime;
-    }
-
-    public Date getAssignmentTime()
-    {
-        return assignmentTime;
-    }
-    public void setDictOpNo(Long dictOpNo)
-    {
-        this.dictOpNo = dictOpNo;
-    }
-
-    public Long getDictOpNo()
-    {
-        return dictOpNo;
-    }
-    public void setOperationDescription(String operationDescription)
-    {
-        this.operationDescription = operationDescription;
-    }
-
-    public String getOperationDescription()
-    {
-        return operationDescription;
-    }
-    public void setTargetQty(Long targetQty)
-    {
-        this.targetQty = targetQty;
-    }
-
-    public Long getTargetQty()
-    {
-        return targetQty;
-    }
-    public void setAssignmentState(String assignmentState)
-    {
-        this.assignmentState = assignmentState;
-    }
-
-    public String getAssignmentState()
-    {
-        return assignmentState;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("taskAsNo", getTaskAsNo())
-            .append("taskNo", getTaskNo())
-            .append("userNoOperator", getUserNoOperator())
-            .append("assignmentTime", getAssignmentTime())
-            .append("dictOpNo", getDictOpNo())
-            .append("operationDescription", getOperationDescription())
-            .append("targetQty", getTargetQty())
-            .append("assignmentState", getAssignmentState())
-            .append("machineNo", getMachineNo())
-            .toString();
-    }
-
-    public Date getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public Date getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
-    }
-
-	public Long getMachineNo() {
-		return machineNo;
-	}
-
-	public void setMachineNo(Long machineNo) {
-		this.machineNo = machineNo;
-	}
-
-	public Long getPriority() {
-		return priority;
-	}
-
-	public void setPriority(Long priority) {
-		this.priority = priority;
-	}
-	
-	
-    
-    
 }
